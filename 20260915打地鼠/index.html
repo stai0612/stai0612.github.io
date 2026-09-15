@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>打地鼠</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game">
+    <h1>打地鼠</h1>
+    <div class="controls">
+      <div class="score">分數: <span id="score">0</span></div>
+      <div class="time">時間: <span id="time">30</span>s</div>
+      <button id="start">開始</button>
+    </div>
+
+    <div class="grid" id="grid">
+      <!-- 3x3 holes -->
+      <div class="hole" data-index="0"></div>
+      <div class="hole" data-index="1"></div>
+      <div class="hole" data-index="2"></div>
+      <div class="hole" data-index="3"></div>
+      <div class="hole" data-index="4"></div>
+      <div class="hole" data-index="5"></div>
+      <div class="hole" data-index="6"></div>
+      <div class="hole" data-index="7"></div>
+      <div class="hole" data-index="8"></div>
+    </div>
+
+    <p class="hint">點擊冒出來的地鼠得分！</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

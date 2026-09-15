@@ -1,0 +1,20 @@
+:root{
+  --bg:#f3f5f7;
+  --hole:#6b4f3b;
+  --dirt:#3e2b22;
+  --mole:#ffd166;
+}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+.game{width:360px;text-align:center}
+h1{margin:0 0 10px}
+.controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.controls .score,.controls .time{font-weight:700}
+#start{padding:6px 12px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;border-radius:8px;padding:12px;background:#e9ecef}
+.hole{position:relative;height:90px;background:var(--dirt);border-radius:12px;overflow:hidden;cursor:pointer}
+.hole::before{content:'';position:absolute;left:50%;top:60%;transform:translateX(-50%);width:78%;height:40%;background:var(--hole);border-radius:50%}
+.mole{position:absolute;left:50%;transform:translateX(-50%);bottom:-60%;width:56%;height:56%;background:var(--mole);border-radius:50%;box-shadow:inset -6px -6px 0 rgba(0,0,0,0.1)}
+.mole.pop{animation:pop .25s ease forwards}
+@keyframes pop{to{bottom:10%}}
+.hint{margin-top:12px;color:#666}
