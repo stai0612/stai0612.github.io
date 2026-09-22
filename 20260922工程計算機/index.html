@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工程計算機</title>
+  <style>
+    :root {
+      --bg-dark: #1d1d1f;
+      --shell: #1f1f22;
+      --shell-2: #2d2f33;
+      --shell-3: #101114;
+      --metal-edge: #3f434a;
+      --metal-light: #9299a3;
+      --metal-dark: #17191d;
+      --screen-bg: #dfe8dc;
+      --screen-digits: #1f2b2a;
+      --button-top: #e4e4e4;
+      --button-mid: #d5d6d9;
+      --button-dark: #2a2d31;
+      --button-dark-2: #1e2227;
+      --button-accent: #1a7adb;
+      --button-accent-2: #0f5ca9;
+      --shadow: rgba(0, 0, 0, 0.5);
+      --gold: #d8c08d;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: radial-gradient(circle at top, #3a3c41 0%, #151719 35%, #060709 100%);
+      font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+      color: #fff;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+
+    .calculator {
+      position: relative;
+      width: 530px;
+      min-height: 820px;
+      background: linear-gradient(145deg, #2f3237 0%, #171a1d 32%, #0d0e10 100%);
+      border-radius: 30px 30px 28px 28px;
+      border: 4px solid #7f868d;
+      box-shadow:
+        0 28px 60px rgba(0,0,0,0.7),
+        inset 0 0 12px rgba(255,255,255,0.12),
+        inset 0 12px 18px rgba(255,255,255,0.08),
+        inset 0 -18px 26px rgba(0,0,0,0.6);
+      padding: 18px 18px 22px;
+      overflow: hidden;
+    }
+
+    .calculator::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.04),
+        rgba(255,255,255,0.04) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      pointer-events: none;
+      opacity: 0.28;
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 6px 8px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-left: 6px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .brand .name {
+      font-size: 2.1rem;
+      color: #d9dfe4;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.8);
+      letter-spacing: 2px;
+    }
+
+    .brand .model {
+      font-size: 1.1rem;
+      color: #d4d7db;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .author {
+      font-size: 0.78rem;
+      line-height: 1.2;
+      color: #d8e2e8;
+      background: rgba(6, 8, 12, 0.35);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 6px 10px;
+      border-radius: 999px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .screen-wrap {
+      position: relative;
+      z-index: 1;
+      margin: 6px 8px 10px;
+      padding: 10px 14px 12px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(120,128,133,0.12));
+      border: 2px solid #8d9398;
+      box-shadow: inset 0 10px 16px rgba(255,255,255,0.08), inset 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .screen-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      line-height: 1;
+      color: #d8dfe5;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      padding: 0 2px;
+    }
+
+    .screen {
+      height: 104px;
+      background: linear-gradient(180deg, #cad7c9 0%, #b8c6ba 100%);
+      border: 2px solid rgba(18,26,22,0.65);
+      border-radius: 8px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.8), inset 0 -8px 12px rgba(48,58,48,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 14px 16px;
+      overflow: hidden;
+    }
+
+    #display {
+      width: 100%;
+      color: var(--screen-digits);
+      text-align: right;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: clamp(2.2rem, 3vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .keypad {
+      position: relative;
+      z-index: 1;
+      margin-top: 12px;
+      padding: 0 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      position: relative;
+      height: 52px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(180deg, var(--button-top) 0%, var(--button-mid) 100%);
+      border: 1px solid rgba(70,75,80,0.8);
+      box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.8),
+        inset 0 -2px 0 rgba(84,88,96,0.35),
+        0 3px 0 rgba(12,12,15,0.8);
+      color: #1e2328;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+      user-select: none;
+      padding: 0 4px;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(84,88,96,0.25), 0 1px 0 rgba(12,12,15,0.8);
+    }
+
+    .btn .small {
+      display: block;
+      font-size: 0.65rem;
+      line-height: 1.1;
+      margin-bottom: 2px;
+      opacity: 0.85;
+      font-weight: 700;
+    }
+
+    .btn .main {
+      display: block;
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .btn.shift {
+      background: linear-gradient(180deg, #e8d8b8 0%, #d4bf8f 100%);
+      color: #2b2418;
+    }
+
+    .btn.mode {
+      background: linear-gradient(180deg, #f2f5f8 0%, #cfd6db 100%);
+    }
+
+    .btn.func {
+      font-size: 0.8rem;
+      padding-top: 2px;
+    }
+
+    .btn.operator {
+      background: linear-gradient(180deg, #d8dfe5 0%, #bfc8d4 100%);
+    }
+
+    .btn.accent {
+      background: linear-gradient(180deg, #2c7fe7 0%, #0d59b7 100%);
+      color: #f5f9ff;
+      border-color: rgba(9,18,29,0.8);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.3), 0 3px 0 rgba(6,18,29,0.82);
+    }
+
+    .btn.dark {
+      background: linear-gradient(180deg, #2d3136 0%, #1c2125 100%);
+      color: #dde5ec;
+      border-color: rgba(9,10,11,0.85);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 0 rgba(0,0,0,0.35), 0 3px 0 rgba(11,12,14,0.9);
+    }
+
+    .row-1 { grid-template-columns: 1.15fr 1.4fr 1.25fr; }
+    .row-1 .btn { height: 44px; }
+
+    .row-2 { grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+    .row-3 { grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+    .row-4 { grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+    .row-5 { grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+    .row-6 { grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+
+    .two-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    @media (max-width: 560px) {
+      .calculator { width: min(96vw, 500px); }
+      .brand .name { font-size: 1.7rem; }
+      .brand .model { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator" aria-label="工程計算機外觀">
+    <div class="topbar">
+      <div class="brand">
+        <span class="name">CASIO</span>
+        <span class="model">fx-82 SOLAR II</span>
+      </div>
+      <div class="author">作者資訊3杜元銘</div>
+    </div>
+
+    <div class="screen-wrap">
+      <div class="screen-legend">
+        <span>SHIFT</span>
+        <span>M K DEG</span>
+        <span>SCI SD</span>
+      </div>
+      <div class="screen">
+        <div id="display">0</div>
+      </div>
+    </div>
+
+    <div class="keypad">
+      <div class="row row-1">
+        <button class="btn shift" type="button"><span class="main">SHIFT</span></button>
+        <button class="btn mode" type="button"><span class="main">MODE</span></button>
+        <button class="btn mode" type="button"><span class="main">ON</span></button>
+      </div>
+
+      <div class="row row-2">
+        <button class="btn func" data-value="sqrt" type="button"><span class="main">√</span></button>
+        <button class="btn func" data-value="pow10" type="button"><span class="small">10</span><span class="main">x</span></button>
+        <button class="btn func" data-value="exp" type="button"><span class="small">e</span><span class="main">x</span></button>
+        <button class="btn func" data-value="square" type="button"><span class="small">x</span><span class="main">²</span></button>
+        <button class="btn func" data-value="log" type="button"><span class="main">log</span></button>
+        <button class="btn func" data-value="ln" type="button"><span class="main">ln</span></button>
+        <button class="btn dark" data-action="clear" type="button"><span class="main">AC</span></button>
+        <button class="btn dark" data-action="delete" type="button"><span class="main">C</span></button>
+      </div>
+
+      <div class="row row-3">
+        <button class="btn func" data-value="sin" type="button"><span class="main">sin</span></button>
+        <button class="btn func" data-value="cos" type="button"><span class="main">cos</span></button>
+        <button class="btn func" data-value="tan" type="button"><span class="main">tan</span></button>
+        <button class="btn func" data-value="hyp" type="button"><span class="main">hyp</span></button>
+        <button class="btn operator" data-action="divide" type="button"><span class="main">÷</span></button>
+        <button class="btn operator" data-action="multiply" type="button"><span class="main">×</span></button>
+        <button class="btn operator" data-action="subtract" type="button"><span class="main">−</span></button>
+        <button class="btn operator" data-action="add" type="button"><span class="main">＋</span></button>
+      </div>
+
+      <div class="row row-4">
+        <button class="btn func" data-value="pi" type="button"><span class="main">π</span></button>
+        <button class="btn func" data-value="ans" type="button"><span class="main">Ans</span></button>
+        <button class="btn func" data-value="fraction" type="button"><span class="main">a b/c</span></button>
+        <button class="btn func" data-value="percent" type="button"><span class="main">%</span></button>
+        <button class="btn dark" data-value="7" type="button"><span class="main">7</span></button>
+        <button class="btn dark" data-value="8" type="button"><span class="main">8</span></button>
+        <button class="btn dark" data-value="9" type="button"><span class="main">9</span></button>
+        <button class="btn accent" data-action="equals" type="button"><span class="main">=</span></button>
+      </div>
+
+      <div class="row row-5">
+        <button class="btn func" data-value="nPr" type="button"><span class="main">nPr</span></button>
+        <button class="btn func" data-value="nCr" type="button"><span class="main">nCr</span></button>
+        <button class="btn func" data-value="xroot" type="button"><span class="main">x√</span></button>
+        <button class="btn func" data-value="recip" type="button"><span class="main">1/x</span></button>
+        <button class="btn dark" data-value="4" type="button"><span class="main">4</span></button>
+        <button class="btn dark" data-value="5" type="button"><span class="main">5</span></button>
+        <button class="btn dark" data-value="6" type="button"><span class="main">6</span></button>
+        <button class="btn operator" data-action="clear" type="button"><span class="main">AC</span></button>
+      </div>
+
+      <div class="row row-6">
+        <button class="btn func" data-value="rand" type="button"><span class="main">Rnd</span></button>
+        <button class="btn func" data-value="e" type="button"><span class="main">e</span></button>
+        <button class="btn func" data-value="deg" type="button"><span class="main">Deg</span></button>
+        <button class="btn func" data-value="mplus" type="button"><span class="main">M+</span></button>
+        <button class="btn dark" data-value="1" type="button"><span class="main">1</span></button>
+        <button class="btn dark" data-value="2" type="button"><span class="main">2</span></button>
+        <button class="btn dark" data-value="3" type="button"><span class="main">3</span></button>
+        <button class="btn operator" data-action="decimal" type="button"><span class="main">.</span></button>
+      </div>
+
+      <div class="row row-6">
+        <button class="btn func" data-value="rnd" type="button"><span class="main">RND</span></button>
+        <button class="btn func" data-value="mminus" type="button"><span class="main">M-</span></button>
+        <button class="btn func" data-value="mr" type="button"><span class="main">MR</span></button>
+        <button class="btn func" data-value="mc" type="button"><span class="main">MC</span></button>
+        <button class="btn dark" data-value="0" type="button"><span class="main">0</span></button>
+        <button class="btn dark" data-action="sign" type="button"><span class="main">±</span></button>
+        <button class="btn dark" data-action="equals" type="button"><span class="main">=</span></button>
+        <button class="btn accent" data-action="clear" type="button"><span class="main">AC</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    let currentValue = '0';
+    let storedValue = null;
+    let pendingOperator = null;
+    let resetAfterInput = false;
+    let memory = 0;
+
+    function render() {
+      display.textContent = currentValue;
+    }
+
+    function clearAll() {
+      currentValue = '0';
+      storedValue = null;
+      pendingOperator = null;
+      resetAfterInput = false;
+      render();
+    }
+
+    function appendDigit(digit) {
+      if (resetAfterInput) {
+        currentValue = digit;
+        resetAfterInput = false;
+      } else {
+        currentValue = currentValue === '0' ? digit : currentValue + digit;
+      }
+      render();
+    }
+
+    function appendDecimal() {
+      if (resetAfterInput) {
+        currentValue = '0.';
+        resetAfterInput = false;
+      } else if (!currentValue.includes('.')) {
+        currentValue += '.';
+      }
+      render();
+    }
+
+    function applyOperator(operator) {
+      const value = Number(currentValue);
+      if (storedValue === null) {
+        storedValue = value;
+      } else if (pendingOperator) {
+        storedValue = calculate(storedValue, value, pendingOperator);
+      }
+      pendingOperator = operator;
+      currentValue = String(storedValue);
+      resetAfterInput = true;
+      render();
+    }
+
+    function calculate(a, b, operator) {
+      switch (operator) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '×': return a * b;
+        case '÷': return b === 0 ? 'Error' : a / b;
+        default: return b;
+      }
+    }
+
+    function equals() {
+      if (pendingOperator && storedValue !== null) {
+        const result = calculate(storedValue, Number(currentValue), pendingOperator);
+        currentValue = String(result);
+        storedValue = null;
+        pendingOperator = null;
+        resetAfterInput = true;
+        render();
+      }
+    }
+
+    function handleUnary(fnName) {
+      const value = Number(currentValue);
+      let result;
+      switch (fnName) {
+        case 'sqrt': result = Math.sqrt(value); break;
+        case 'square': result = value * value; break;
+        case 'log': result = Math.log10(value); break;
+        case 'ln': result = Math.log(value); break;
+        case 'sin': result = Math.sin(value * Math.PI / 180); break;
+        case 'cos': result = Math.cos(value * Math.PI / 180); break;
+        case 'tan': result = Math.tan(value * Math.PI / 180); break;
+        case 'exp': result = Math.exp(value); break;
+        case 'pow10': result = Math.pow(10, value); break;
+        case 'pi': result = Math.PI; break;
+        case 'e': result = Math.E; break;
+        case 'recip': result = value === 0 ? 'Error' : 1 / value; break;
+        case 'percent': result = value / 100; break;
+        default: result = value;
+      }
+      currentValue = String(result);
+      render();
+    }
+
+    document.querySelectorAll('.btn[data-value]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const value = button.dataset.value;
+        if (/^\d$/.test(value)) {
+          appendDigit(value);
+        } else if (value === 'pi' || value === 'e') {
+          handleUnary(value);
+        } else if (['sqrt', 'square', 'log', 'ln', 'sin', 'cos', 'tan', 'exp', 'pow10', 'recip', 'percent'].includes(value)) {
+          handleUnary(value);
+        } else if (value === 'ans') {
+          currentValue = currentValue === '0' ? '0' : currentValue;
+          render();
+        } else if (value === 'mplus') {
+          memory += Number(currentValue);
+          render();
+        } else if (value === 'mminus') {
+          memory -= Number(currentValue);
+          render();
+        } else if (value === 'mr') {
+          currentValue = String(memory);
+          render();
+        } else if (value === 'mc') {
+          memory = 0;
+          render();
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn[data-action]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const action = button.dataset.action;
+        if (action === 'clear') {
+          clearAll();
+        } else if (action === 'delete') {
+          currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : '0';
+          render();
+        } else if (action === 'add') {
+          applyOperator('+');
+        } else if (action === 'subtract') {
+          applyOperator('-');
+        } else if (action === 'multiply') {
+          applyOperator('×');
+        } else if (action === 'divide') {
+          applyOperator('÷');
+        } else if (action === 'decimal') {
+          appendDecimal();
+        } else if (action === 'equals') {
+          equals();
+        } else if (action === 'sign') {
+          currentValue = String(Number(currentValue) * -1);
+          render();
+        }
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
