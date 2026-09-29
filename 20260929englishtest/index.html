@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="從 200 個英文單字中隨機抽題，挑戰 10 分鐘單字測驗。">
+  <title>Word Sprint | 英文單字測驗</title>
+  <style>
+    :root{color-scheme:light;--paper:#f4f2e9;--white:#fffdf7;--ink:#202b27;--muted:#727b72;--line:#d9ddd2;--green:#23624b;--deep:#174833;--lime:#d8e66a;--coral:#d9674d;--pale:#fae8e1}
+    *{box-sizing:border-box}body{min-width:320px;min-height:100vh;margin:0;color:var(--ink);background:radial-gradient(rgba(35,98,75,.08) .7px,transparent .7px) 0 0/12px 12px,var(--paper);font-family:"Aptos","Segoe UI","Microsoft JhengHei",sans-serif;line-height:1.55}button,input{font:inherit}button{color:inherit}
+    .topbar{max-width:1120px;margin:auto;padding:24px 28px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px;color:var(--deep);font-size:.92rem;font-weight:850}.brand-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:11px 11px 11px 3px;color:var(--white);background:var(--green);font:italic 700 1.25rem Georgia,serif}.header-meta{display:flex;align-items:center;gap:18px}.author{display:flex;align-items:center;gap:5px;color:var(--deep);font-size:.78rem;font-weight:800;white-space:nowrap}.author-label{color:var(--muted);font-size:.68rem;font-weight:700}.source{color:var(--muted);font-size:.82rem;font-weight:700;text-underline-offset:4px}main{width:min(100% - 40px,920px);margin:12px auto 72px}
+    .intro{position:relative;overflow:hidden;padding:clamp(28px,6vw,54px);border-radius:5px 28px 5px 28px;color:var(--white);background:var(--deep);box-shadow:0 14px 40px #2a362b14;animation:rise .5s ease both}.intro:after{position:absolute;top:-92px;right:-35px;width:260px;height:260px;border:1px solid #d8e66a59;border-radius:50%;box-shadow:0 0 0 24px #d8e66a0f,0 0 0 52px #d8e66a0a;content:"";pointer-events:none}.eyebrow{display:flex;align-items:center;gap:9px;margin:0 0 16px;color:var(--lime);font-size:.76rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.eyebrow:before{width:22px;height:2px;background:currentColor;content:""}h1{max-width:600px;margin:0;font:500 clamp(2.8rem,8vw,5.5rem)/.98 Georgia,"Times New Roman",serif}h1 span{color:var(--lime);font-style:italic}.intro-copy{max-width:470px;margin:22px 0 0;color:#fffdf7c7}.rule-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}.rule{display:flex;align-items:baseline;gap:7px;padding:9px 13px;border:1px solid #ffffff33;border-radius:3px;color:#fffdf7c7;font-size:.78rem}.rule strong{color:var(--white);font-size:.94rem}
+    .button{display:inline-flex;min-height:50px;align-items:center;justify-content:center;gap:12px;margin-top:28px;padding:0 21px;border:0;border-radius:3px 14px 3px 14px;color:var(--deep);background:var(--lime);font-weight:850;cursor:pointer;transition:transform .16s,background .16s}.button:hover{transform:translateY(-2px);background:#e6ef91}.button:focus-visible,.choice:focus-within,.source:focus-visible{outline:3px solid var(--coral);outline-offset:3px}.arrow{font-size:1.15rem}.quiz{display:none}.quiz.visible{display:block;animation:rise .4s ease both}
+    .quiz-head{position:sticky;z-index:3;top:0;display:grid;grid-template-columns:1fr auto;gap:14px 24px;align-items:center;margin:0 -12px 22px;padding:14px 18px;border:1px solid #d9ddd2d9;border-radius:4px 16px 4px 16px;background:#fffdf7f2;box-shadow:0 8px 24px #2a362b12;backdrop-filter:blur(12px)}.progress-label{color:var(--muted);font-size:.8rem;font-weight:750}.progress-label strong{color:var(--deep)}.track{height:5px;overflow:hidden;margin-top:6px;border-radius:9px;background:#e6e9df}.fill{width:0;height:100%;background:var(--green);transition:width .18s}.timer{display:flex;min-width:88px;align-items:center;justify-content:center;gap:7px;padding:8px 11px;border-radius:3px 10px 3px 10px;color:var(--deep);background:#edf0dc;font-variant-numeric:tabular-nums;font-size:1.05rem;font-weight:850}.timer.low{color:#a53d2d;background:var(--pale)}.timer small{font-size:.68rem}
+    .questions{display:grid;gap:13px}.card{min-width:0;margin:0;padding:21px 22px 19px;border:1px solid var(--line);border-radius:4px 17px 4px 17px;background:var(--white);box-shadow:0 4px 15px #2a362b09;animation:rise .35s ease both;animation-delay:calc(var(--i,0)*18ms)}.card legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.qtop{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}.qnum{color:var(--green);font-size:.72rem;font-weight:850;letter-spacing:.1em}.points{color:#92988e;font-size:.72rem;font-weight:700}.word{margin:0;font:500 clamp(1.65rem,4vw,2.2rem)/1.1 Georgia,"Times New Roman",serif;overflow-wrap:anywhere}.prompt{margin:5px 0 15px;color:var(--muted);font-size:.81rem}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choice{position:relative;display:flex;min-height:46px;align-items:center;gap:10px;padding:9px 12px;border:1px solid #e2e5dd;border-radius:3px 10px 3px 10px;color:#414a42;background:#fffefa;cursor:pointer;transition:border-color .14s,background .14s}.choice:hover{border-color:#99b8a6;background:#f6f8ee}.choice input{position:absolute;width:1px;height:1px;opacity:0}.mark{width:23px;height:23px;flex:0 0 23px;display:grid;place-items:center;border:1px solid #cbd1c5;border-radius:50%;color:var(--muted);font-size:.67rem;font-weight:800}.choice:has(input:checked){border-color:var(--green);background:#edf4e9}.choice:has(input:checked) .mark{border-color:var(--green);color:white;background:var(--green)}.choice:has(input:focus-visible){outline:3px solid var(--coral);outline-offset:2px}.choice-text{font-size:.87rem;line-height:1.35}.choice.correct{border-color:#438563;background:#eaf4e9}.choice.wrong{border-color:var(--coral);background:var(--pale)}.choice.muted{opacity:.55}.feedback{display:none;margin:12px 0 0;color:var(--muted);font-size:.8rem}.graded .feedback{display:block}.feedback strong{color:var(--deep)}.graded .choice{cursor:default}
+    .actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-top:22px}.note{color:var(--muted);font-size:.83rem}.submit{margin:0;color:white;background:var(--coral)}.submit:hover{background:#bd5039}.result{display:none;margin:0 0 20px;padding:22px 25px;border-left:5px solid var(--green);border-radius:3px 15px 3px 3px;background:#eaf0df;animation:rise .35s ease both}.result.visible{display:flex;align-items:center;justify-content:space-between;gap:18px}.result-label{margin:0;color:var(--green);font-size:.75rem;font-weight:850;letter-spacing:.1em}.result h2{margin:2px 0 0;font:500 1.6rem Georgia,serif}.score{color:var(--deep);font-size:2.2rem;font-weight:900;font-variant-numeric:tabular-nums}.restart{min-height:44px;padding:0 15px;border:1px solid var(--green);border-radius:3px 11px 3px 11px;color:var(--deep);background:transparent;font-weight:800;cursor:pointer}.restart:hover{color:white;background:var(--green)}.foot{margin:25px 0 0;color:#92988e;font-size:.75rem;text-align:center}@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){.topbar{padding:17px 20px}.header-meta{flex-direction:column;align-items:flex-end;gap:2px}main{width:min(100% - 28px,920px);margin-top:9px}.intro{padding:29px 23px}.intro:after{right:-155px}.rule-row{gap:7px}.rule{padding:7px 9px;font-size:.72rem}.quiz-head{margin-right:-5px;margin-left:-5px;padding:11px 13px}.card{padding:18px 16px 16px}.choices{grid-template-columns:1fr;gap:7px}.choice{min-height:43px}.result.visible{align-items:flex-start}.score{font-size:1.8rem}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">w</span><span>WORD SPRINT</span></div>
+    <div class="header-meta">
+      <span class="author"><span class="author-label">作者</span>資訊3 杜元銘</span>
+      <a class="source" href="https://docs.google.com/spreadsheets/d/1Wa5jqjjw1daxClThDoaoVSiD0mTiMTyYjU9PrZUAfaA/edit?gid=0#gid=0" target="_blank" rel="noreferrer">查看單字範圍 ↗</a>
+    </div>
+  </header>
+  <main>
+    <section class="intro" id="intro" aria-labelledby="page-title">
+      <p class="eyebrow">Vocabulary challenge · No. 01</p><h1 id="page-title">Word <span>Sprint</span></h1>
+      <p class="intro-copy">從 200 個單字中隨機抽出 20 題，選出最貼切的中文意思。準備好了，就開始作答。</p>
+      <div class="rule-row" aria-label="測驗規則"><span class="rule"><strong>20</strong> 道選擇題</span><span class="rule"><strong>5</strong> 分／題</span><span class="rule"><strong>10:00</strong> 作答時間</span><span class="rule"><strong>100</strong> 滿分</span></div>
+      <button class="button" id="start" type="button">開始測驗 <span class="arrow" aria-hidden="true">→</span></button>
+    </section>
+    <section class="quiz" id="quiz" aria-label="英文單字測驗">
+      <div class="quiz-head"><div><div class="progress-label"><strong id="answered">0</strong> / 20 題已作答</div><div class="track" role="progressbar" aria-label="作答進度" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0"><div class="fill" id="fill"></div></div></div><div class="timer" id="timer" role="timer" aria-label="剩餘時間 10 分鐘"><span aria-hidden="true">◷</span><span id="time">10:00</span><small>剩餘</small></div></div>
+      <div class="result" id="result" aria-live="polite"><div><p class="result-label">測驗完成</p><h2 id="result-title">你的測驗成績</h2></div><div class="score" id="score">0 / 100</div></div>
+      <form id="form"><div class="questions" id="questions"></div><div class="actions" id="actions"><span class="note" id="note">尚有 20 題未作答</span><button class="button submit" type="submit">交卷並看結果 <span class="arrow" aria-hidden="true">→</span></button></div></form>
+      <p class="foot">題目每次開始都會重新抽選並排列。</p>
+    </section>
+  </main>
+  <script>
+    const WORDS = `abandon|v. 放棄、拋棄
+ability|n. 能力
+abroad|adv. 在國外
+absence|n. 缺席、不在
+absolute|adj. 絕對的
+accept|v. 接受
+access|n. 接近、取得
+accident|n. 意外
+account|n. 帳戶
+achieve|v. 達成、實現
+action|n. 行動
+active|adj. 活躍的、主動的
+actual|adj. 實際的
+add|v. 增加、添加
+address|n. 地址
+adjust|v. 調整、適應
+admire|v. 欣賞、欽佩
+admit|v. 承認
+advance|n./v. 前進、進步
+advantage|n. 優勢、好處
+advice|n. 建議、忠告
+affair|n. 事務、事件
+affect|v. 影響
+afford|v. 負擔得起
+afraid|adj. 害怕的
+agent|n. 代理人、經紀人
+agree|v. 同意
+ahead|adv. 在前方、領先
+aim|n./v. 目標、瞄準
+airplane|n. 飛機
+alarm|n. 鬧鐘、警報
+allow|v. 允許
+alone|adv./adj. 單獨的
+along|prep. 沿著
+aloud|adv. 大聲地
+already|adv. 已經
+altogether|adv. 完全地、總共
+always|adv. 總是
+amaze|v. 使驚訝
+amount|n. 數量
+analyze|v. 分析
+ancient|adj. 古老的
+anger|n. 憤怒
+angle|n. 角度
+animal|n. 動物
+ankle|n. 腳踝
+announce|v. 宣布
+annoy|v. 使煩惱、惹惱
+annual|adj. 年度的
+another|pron./adj. 另一個
+answer|n./v. 答案、回答
+anxious|adj. 焦慮的
+anyhow|adv. 無論如何
+anyone|pron. 任何人
+anyway|adv. 無論如何
+apart|adv. 分開地
+apologize|v. 道歉
+appeal|v./n. 吸引、呼籲
+appear|v. 出現、似乎
+appetite|n. 食慾
+apply|v. 申請、應用
+appoint|v. 任命、指派
+appreciate|v. 感謝、欣賞
+approach|v./n. 接近、方法
+approve|v. 贊成、批准
+argue|v. 爭論
+arise|v. 產生、出現
+arm|n. 手臂
+army|n. 軍隊
+around|prep./adv. 在...周圍
+arrange|v. 安排
+arrest|v. 逮捕
+arrive|v. 抵達
+arrow|n. 箭
+article|n. 文章、物品
+artist|n. 藝術家
+ashamed|adj. 感到羞恥的
+aside|adv. 在一旁
+asleep|adj. 睡著的
+aspect|n. 方面
+assist|v. 協助
+assume|v. 假設、認為
+assure|v. 保證
+attack|v./n. 攻擊
+attempt|v./n. 企圖、嘗試
+attend|v. 參加、出席
+attention|n. 注意力
+attitude|n. 態度
+attract|v. 吸引
+audience|n. 觀眾
+author|n. 作者
+average|adj./n. 平均的
+avoid|v. 避免
+awake|adj. 醒著的
+award|n./v. 獎、頒發
+aware|adj. 意識到的
+awful|adj. 糟糕的
+awkward|adj. 尷尬的、笨拙的
+background|n. 背景
+backward|adv. 向後地
+balance|n./v. 平衡
+balloon|n. 氣球
+band|n. 樂團
+bank|n. 銀行
+bar|n. 酒吧、條狀物
+bare|adj. 裸露的、赤裸的
+base|n. 基礎、底部
+basic|adj. 基礎的
+basis|n. 基礎、根據
+basket|n. 籃子
+bath|n. 沐浴
+battle|n. 戰役
+bear|v. 忍受、承擔
+beat|v. 擊敗、敲打
+beauty|n. 美麗
+become|v. 變成
+beef|n. 牛肉
+before|prep./adv. 在...之前
+beg|v. 乞求
+begin|v. 開始
+behave|v. 表現、守規矩
+behavior|n. 行為
+behind|prep./adv. 在...後面
+belief|n. 信仰、信念
+believe|v. 相信
+bell|n. 鐘、鈴
+belong|v. 屬於
+below|prep./adv. 在...下方
+belt|n. 腰帶、皮帶
+bench|n. 長椅
+bend|v. 彎曲
+beneath|prep. 在...正下方
+benefit|n./v. 利益、有益於
+beside|prep. 在...旁邊
+besides|adv./prep. 此外、除了...之外
+best|adj./adv. 最好的
+better|adj./adv. 更好的
+beyond|prep. 超越、在...那一邊
+bill|n. 帳單、鈔票
+bind|v. 綁、束縛
+birth|n. 出生
+bite|v./n. 咬
+bitter|adj. 苦的、痛苦的
+blame|v. 責備
+blank|adj./n. 空白的、空格
+blind|adj. 盲的
+block|n. 街區、阻擋
+blood|n. 血液
+blow|v. 吹
+blue|adj. 藍色的、憂鬱的
+board|n./v. 木板、登機
+boast|v. 自誇
+boat|n. 小船
+body|n. 身體
+boil|v. 沸騰、煮
+bold|adj. 大膽的
+bomb|n. 炸彈
+bone|n. 骨頭
+book|v. 預訂 (動詞)
+border|n. 邊界
+bore|v. 使厭煩
+borrow|v. 借入
+boss|n. 老闆
+bother|v. 打擾
+bottle|n. 瓶子
+bottom|n. 底部
+bound|adj. 必然的、受約束的
+bow|v./n. 鞠躬
+bowl|n. 碗
+brain|n. 大腦
+branch|n. 樹枝、分公司
+brand|n. 品牌
+brave|adj. 勇敢的
+bread|n. 麵包
+break|v./n. 打破、休息
+breakfast|n. 早餐
+breath|n. 呼吸
+breathe|v. 呼吸
+brick|n. 磚塊
+bridge|n. 橋
+brief|adj. 簡短的
+bright|adj. 明亮的、聰明的
+brilliant|adj. 傑出的、聰穎的
+bring|v. 帶來
+broad|adj. 寬廣的
+broadcast|v./n. 廣播
+brother|n. 兄弟
+brown|adj./n. 棕色
+brush|v./n. 刷、梳
+budget|n. 預算
+build|v. 建立、建築
+building|n. 建築物
+bullet|n. 子彈
+bunch|n. 一串、一群
+burden|n. 負擔
+burn|v. 燃燒
+burst|v. 爆裂
+bury|v. 埋葬
+business|n. 商業、生意
+button|n. 按鈕、鈕扣`;
+    const BANK = WORDS.trim().split("\n").map(line => { const [word, meaning] = line.split("|"); return {word, meaning}; });
+    const TOTAL = 20, POINTS = 5, SECONDS = 600, LETTERS = ["A", "B", "C", "D"];
+    const $ = selector => document.querySelector(selector);
+    const intro = $("#intro"), quiz = $("#quiz"), list = $("#questions"), form = $("#form"), actions = $("#actions"), initialActions = actions.innerHTML;
+    let questions = [], remaining = SECONDS, interval, finished = false;
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; }
+      return copy;
+    }
+    function makeQuestions() {
+      return shuffle(BANK).slice(0, TOTAL).map(answer => ({answer, choices: shuffle([answer, ...shuffle(BANK.filter(item => item.word !== answer.word && item.meaning !== answer.meaning)).slice(0, 3)])}));
+    }
+    function renderQuestions() {
+      list.innerHTML = questions.map((q, i) => `<fieldset class="card" style="--i:${i}" id="q${i}"><legend>第 ${i + 1} 題：${q.answer.word}</legend><div class="qtop"><span class="qnum">QUESTION ${String(i + 1).padStart(2, "0")}</span><span class="points">5 分</span></div><h2 class="word">${q.answer.word}</h2><p class="prompt">選出最貼切的中文意思</p><div class="choices">${q.choices.map((choice, j) => `<label class="choice"><input type="radio" name="q${i}" value="${choice.word}" aria-label="${LETTERS[j]}. ${choice.meaning}"><span class="mark" aria-hidden="true">${LETTERS[j]}</span><span class="choice-text">${choice.meaning}</span></label>`).join("")}</div><p class="feedback"></p></fieldset>`).join("");
+    }
+    function updateProgress() {
+      const count = new Set([...form.querySelectorAll("input:checked")].map(input => input.name)).size;
+      $("#answered").textContent = count;
+      $("#note").textContent = count === TOTAL ? "20 題皆已作答" : `尚有 ${TOTAL - count} 題未作答`;
+      $("#fill").style.width = `${count / TOTAL * 100}%`;
+      $(".track").setAttribute("aria-valuenow", count);
+    }
+    function updateTimer() {
+      const minutes = Math.floor(remaining / 60), seconds = remaining % 60;
+      $("#time").textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      $("#timer").setAttribute("aria-label", `剩餘時間 ${minutes} 分 ${seconds} 秒`);
+      $("#timer").classList.toggle("low", remaining <= 60);
+    }
+    function startExam() {
+      clearInterval(interval);
+      actions.innerHTML = initialActions;
+      questions = makeQuestions(); remaining = SECONDS; finished = false;
+      intro.hidden = true; quiz.classList.add("visible"); $("#result").classList.remove("visible");
+      renderQuestions(); updateProgress(); updateTimer(); window.scrollTo({top: 0, behavior: "smooth"});
+      interval = setInterval(() => { remaining--; updateTimer(); if (remaining <= 0) finishExam(true); }, 1000);
+    }
+    function finishExam(timeExpired = false) {
+      if (finished) return;
+      finished = true; clearInterval(interval);
+      const selected = new Map([...form.querySelectorAll("input:checked")].map(input => [input.name, input.value]));
+      let score = 0;
+      questions.forEach((q, i) => {
+        const card = $(`#q${i}`), answer = selected.get(`q${i}`), correct = answer === q.answer.word;
+        if (correct) score += POINTS;
+        card.classList.add("graded");
+        card.querySelectorAll("input").forEach(input => {
+          input.disabled = true;
+          const label = input.closest(".choice");
+          if (input.value === q.answer.word) label.classList.add("correct");
+          else if (input.checked && !correct) label.classList.add("wrong");
+          else label.classList.add("muted");
+        });
+        card.querySelector(".feedback").innerHTML = correct ? "<strong>答對了</strong> · 5 分" : answer ? `正確答案：<strong>${q.answer.meaning}</strong>` : `未作答 · 正確答案：<strong>${q.answer.meaning}</strong>`;
+      });
+      $("#result-title").textContent = timeExpired ? "時間到，這是你的成績" : "你的測驗成績";
+      $("#score").textContent = `${score} / 100`; $("#result").classList.add("visible");
+      actions.innerHTML = '<span class="note">答案已公布，可往下查看逐題解析。</span><button class="restart" id="restart" type="button">再測一次 ↻</button>';
+      $("#restart").addEventListener("click", startExam);
+      $("#result").scrollIntoView({behavior: "smooth", block: "center"});
+    }
+    list.addEventListener("change", updateProgress);
+    $("#start").addEventListener("click", startExam);
+    form.addEventListener("submit", event => { event.preventDefault(); finishExam(); });
+  </script>
+</body>
+</html>
