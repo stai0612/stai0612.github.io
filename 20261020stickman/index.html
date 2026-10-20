@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stickman Dodge</title>
+  <style>
+    :root {
+      --bg1: #081421;
+      --bg2: #0e2335;
+      --panel: rgba(12, 22, 30, 0.78);
+      --line: rgba(255,255,255,0.15);
+      --accent: #7fe7ff;
+      --accent2: #8cffb5;
+      --warning: #ffd166;
+      --danger: #ff6b6b;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100vh;
+      font-family: "Microsoft JhengHei", Arial, sans-serif;
+      background: radial-gradient(circle at top, #15324c 0%, var(--bg1) 36%, #040910 100%);
+      color: white;
+      display: grid;
+      place-items: center;
+    }
+
+    .wrap {
+      width: min(1000px, 96vw);
+      padding: 18px 18px 14px;
+      border-radius: 20px;
+      background: var(--panel);
+      border: 2px solid var(--line);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .title {
+      color: var(--accent);
+      text-shadow: 0 0 12px rgba(127,231,255,0.65);
+    }
+
+    .score {
+      color: var(--warning);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 420px;
+      background: linear-gradient(180deg, #12314c 0%, #1a3856 38%, #204a47 100%);
+      border-radius: 14px;
+      border: 2px solid var(--line);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 12px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .key {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: inset 0 -3px 0 rgba(255,255,255,0.06);
+      color: var(--accent2);
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hud">
+      <div class="title">Stickman Dodge</div>
+      <div class="score">分數：<span id="score">0</span></div>
+    </div>
+    <canvas id="gameCanvas" width="1000" height="420"></canvas>
+    <div class="controls">
+      <span class="key">A</span> 後退
+      <span class="key">S</span> 下蹲
+      <span class="key">D</span> 前進
+      <span class="key">W</span> 往上跳
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+
+    const groundY = 325;
+    const keys = {};
+    let jumpQueued = false;
+
+    const player = {
+      x: 170,
+      y: 0,
+      vy: 0,
+      jumpPower: 15,
+      speed: 5,
+      crouching: false,
+      jumping: false,
+      alive: true,
+      blink: 0,
+      bodyH: 110,
+      crouchH: 62,
+      width: 36
+    };
+
+    const obstacles = [];
+    let score = 0;
+    let spawnTimer = 0;
+    let lastTime = 0;
+
+    function resetGame() {
+      player.x = 170;
+      player.y = 0;
+      player.vy = 0;
+      player.crouching = false;
+      player.jumping = false;
+      player.alive = true;
+      player.blink = 0;
+      obstacles.length = 0;
+      spawnTimer = 0;
+      score = 0;
+      scoreEl.textContent = '0';
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const actionMap = { KeyA: 'a', KeyS: 's', KeyD: 'd', KeyW: 'w', KeyR: 'r' };
+      const k = actionMap[event.code];
+      if (!k) return;
+      event.preventDefault();
+      if (k === 'w' && !keys.w) {
+        jumpQueued = true;
+      }
+      keys[k] = true;
+    });
+
+    document.addEventListener('keyup', (event) => {
+      const actionMap = { KeyA: 'a', KeyS: 's', KeyD: 'd', KeyW: 'w', KeyR: 'r' };
+      const k = actionMap[event.code];
+      if (!k) return;
+      keys[k] = false;
+    });
+
+    function spawnObstacle() {
+      const type = Math.random();
+      let width = 24 + Math.random() * 28;
+      let height = 40 + Math.random() * 115;
+
+      if (type > 0.78) {
+        width = 18 + Math.random() * 18;
+        height = 70 + Math.random() * 82;
+      }
+
+      obstacles.push({
+        x: canvas.width + 30,
+        y: groundY - height,
+        width,
+        height,
+        hue: 180 + Math.random() * 90
+      });
+    }
+
+    function getPlayerRect() {
+      const bodyH = player.crouching ? player.crouchH : player.bodyH;
+      return {
+        x: player.x + 14,
+        y: groundY - bodyH - player.y,
+        width: player.width,
+        height: bodyH
+      };
+    }
+
+    function updatePlayer() {
+      if (!player.alive) return;
+
+      if (keys.d) player.x += player.speed;
+      if (keys.a) player.x -= player.speed;
+      player.x = Math.max(80, Math.min(player.x, 430));
+
+      if (keys.s && !player.jumping) {
+        player.crouching = true;
+      } else {
+        player.crouching = false;
+      }
+
+      if (jumpQueued && !player.jumping) {
+        player.jumping = true;
+        player.vy = -player.jumpPower;
+        jumpQueued = false;
+      }
+
+      if (player.jumping) {
+        player.vy += 0.72;
+        player.y += player.vy;
+        if (player.y >= 0) {
+          player.y = 0;
+          player.vy = 0;
+          player.jumping = false;
+        }
+      }
+    }
+
+    function updateObstacles(delta) {
+      spawnTimer += delta;
+      if (spawnTimer > 1100) {
+        spawnTimer = 0;
+        spawnObstacle();
+      }
+
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const obs = obstacles[i];
+        obs.x -= 6 + score * 0.02;
+
+        if (obs.x + obs.width < -10) {
+          obstacles.splice(i, 1);
+          score += 1;
+          scoreEl.textContent = String(score);
+        }
+      }
+    }
+
+    function checkCollision() {
+      const p = getPlayerRect();
+
+      for (const obs of obstacles) {
+        const playerBottomAboveObstacle = p.y + p.height <= obs.y + 8;
+        if (playerBottomAboveObstacle) {
+          continue;
+        }
+
+        const hit = (
+          p.x < obs.x + obs.width &&
+          p.x + p.width > obs.x &&
+          p.y < obs.y + obs.height &&
+          p.y + p.height > obs.y
+        );
+
+        if (hit) {
+          player.alive = false;
+          player.blink = 1;
+          break;
+        }
+      }
+    }
+
+    function drawBackground() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      sky.addColorStop(0, '#103252');
+      sky.addColorStop(0.5, '#163d5b');
+      sky.addColorStop(1, '#1a4a47');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < 18; i++) {
+        const x = (i * 90 + score * 1.7) % (canvas.width + 80);
+        const y = 30 + (i % 6) * 32;
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.fillRect(x, y, 2, 2);
+      }
+
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      for (let i = 0; i < 8; i++) {
+        const hillX = i * 170 - (score * 1.3) % 170;
+        ctx.beginPath();
+        ctx.moveTo(hillX, groundY + 40);
+        ctx.quadraticCurveTo(hillX + 60, groundY - 8, hillX + 120, groundY + 40);
+        ctx.quadraticCurveTo(hillX + 170, groundY + 12, hillX + 220, groundY + 40);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = '#2c6d63';
+      ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+
+      ctx.strokeStyle = '#baf8ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY + 2);
+      ctx.lineTo(canvas.width, groundY + 2);
+      ctx.stroke();
+    }
+
+    function drawObstacle(obs) {
+      ctx.save();
+      ctx.translate(obs.x, obs.y);
+      ctx.fillStyle = `hsl(${obs.hue}, 70%, 60%)`;
+      ctx.fillRect(0, 0, obs.width, obs.height);
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(0, 0, obs.width, obs.height);
+      ctx.restore();
+    }
+
+    function drawPlayer() {
+      const bodyH = player.crouching ? player.crouchH : player.bodyH;
+      const bodyTop = groundY - bodyH - player.y;
+      const swing = Math.sin((performance.now() / 120) % (Math.PI * 2)) * (player.crouching ? 8 : 18);
+
+      ctx.save();
+      ctx.translate(player.x, bodyTop);
+      ctx.strokeStyle = '#f2f7ff';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      ctx.arc(18, 18, 16, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(18, 34);
+      ctx.lineTo(18, 34 + (player.crouching ? 20 : 52));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(18, 42);
+      ctx.lineTo(8 + swing * 0.5, 62);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(18, 42);
+      ctx.lineTo(28 - swing * 0.5, 62);
+      ctx.stroke();
+
+      const legY = player.crouching ? 82 : 86;
+      ctx.beginPath();
+      ctx.moveTo(18, legY);
+      ctx.lineTo(10 + (player.jumping ? 4 : 0), 110 + (player.crouching ? 10 : 0));
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(18, legY);
+      ctx.lineTo(26 - (player.jumping ? 4 : 0), 110 + (player.crouching ? 10 : 0));
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawGameOver() {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.56)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 42px Microsoft JhengHei';
+      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 8);
+      ctx.font = '22px Microsoft JhengHei';
+      ctx.fillText('按 R 重新開始', canvas.width / 2, canvas.height / 2 + 32);
+      ctx.restore();
+    }
+
+    function loop(timestamp) {
+      const delta = timestamp - lastTime || 16;
+      lastTime = timestamp;
+
+      drawBackground();
+
+      if (player.alive) {
+        updatePlayer();
+        updateObstacles(delta);
+        checkCollision();
+      } else {
+        if (keys.r) {
+          resetGame();
+        }
+      }
+
+      for (const obs of obstacles) {
+        drawObstacle(obs);
+      }
+
+      drawPlayer();
+
+      if (!player.alive) {
+        drawGameOver();
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    resetGame();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
