@@ -175,20 +175,21 @@
     .project-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 26px;
+      gap: 28px;
       margin-top: 24px;
       animation: fadeUp 0.8s ease both;
     }
 
     .project-card {
-      display: block;
+      display: flex;
+      flex-direction: column;
       text-decoration: none;
       color: var(--text);
-      background: rgba(255,255,255,0.94);
-      border: 1px solid rgba(230, 237, 244, 0.9);
-      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,255,0.96));
+      border: 1px solid rgba(224, 233, 243, 0.95);
+      border-radius: 26px;
       overflow: hidden;
-      box-shadow: 0 18px 30px rgba(31, 42, 55, 0.08);
+      box-shadow: 0 18px 35px rgba(31, 42, 55, 0.08);
       transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
       position: relative;
       animation: fadeUp 0.7s ease both;
@@ -199,8 +200,8 @@
     .project-card:nth-child(4) { animation-delay: 0.24s; }
 
     .project-card:hover {
-      transform: translateY(-8px) scale(1.01);
-      box-shadow: 0 24px 38px rgba(31, 42, 55, 0.14);
+      transform: translateY(-10px);
+      box-shadow: 0 26px 42px rgba(31, 42, 55, 0.12);
       border-color: rgba(94, 200, 255, 0.5);
     }
 
@@ -208,15 +209,23 @@
       transform: scale(1.08);
     }
 
-    .project-card:hover .project-content h3 {
+    .project-card:hover .project-title {
       color: var(--primary-dark);
     }
 
     .project-thumb {
       position: relative;
-      height: 190px;
+      height: 220px;
       overflow: hidden;
       background: linear-gradient(135deg, #ffb703 0%, #5ec8ff 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .project-thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(6,18,32,0.08), rgba(6,18,32,0.22));
     }
 
     .project-thumb img {
@@ -240,21 +249,76 @@
     }
 
     .project-content {
-      padding: 20px 20px 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,250,255,0.95));
+      padding: 22px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,255,0.96));
     }
 
-    .project-content h3 {
-      margin: 0 0 8px;
-      font-size: 1.35rem;
+    .project-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .project-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #2869a5;
+      background: #ebf7ff;
+      border: 1px solid rgba(94, 200, 255, 0.3);
+    }
+
+    .project-date {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .project-title {
+      margin: 0;
+      font-size: 1.5rem;
+      line-height: 1.35;
       transition: color 0.25s ease;
     }
 
-    .project-content p {
+    .project-description {
       margin: 0;
       color: var(--muted);
       font-size: 0.98rem;
       line-height: 1.7;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      width: fit-content;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(94, 200, 255, 0.22);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .project-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px rgba(94, 200, 255, 0.28);
     }
 
     @keyframes fadeUp {
@@ -347,41 +411,61 @@
       <div class="project-grid">
         <a class="project-card" href="./20260915打地鼠/index.html" target="_blank" rel="noopener noreferrer">
           <div class="project-thumb">
-            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80" alt="打地鼠遊戲縮圖" />
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80" alt="打地鼠遊戲縮圖" />
           </div>
           <div class="project-content">
-            <h3>20260915 打地鼠</h3>
-            <p>點擊老鼠快速擊倒，測試反應力與節奏感的簡單遊戲。</p>
+            <div class="project-meta">
+              <span class="project-tag">GAME</span>
+              <span class="project-date">2026/09/15</span>
+            </div>
+            <h3 class="project-title">打地鼠</h3>
+            <p class="project-description">一款以反應速度為核心的點擊遊戲，目標是在時間內快速擊中出現的老鼠，體驗節奏感與挑戰感。</p>
+            <span class="project-link">查看作品</span>
           </div>
         </a>
 
         <a class="project-card" href="./20260922工程計算機/index.html" target="_blank" rel="noopener noreferrer">
           <div class="project-thumb">
-            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80" alt="工程計算機縮圖" />
+            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80" alt="工程計算機縮圖" />
           </div>
           <div class="project-content">
-            <h3>20260922 工程計算機</h3>
-            <p>可進行工程相關數值計算，提供實用的計算工具。</p>
+            <div class="project-meta">
+              <span class="project-tag">TOOL</span>
+              <span class="project-date">2026/09/22</span>
+            </div>
+            <h3 class="project-title">工程計算機</h3>
+            <p class="project-description">實用型計算工具，適合處理工程相關數值與簡單公式運算，提升實作效率與便利性。</p>
+            <span class="project-link">查看作品</span>
           </div>
         </a>
 
         <a class="project-card" href="./20260929englishtest/index.html" target="_blank" rel="noopener noreferrer">
           <div class="project-thumb">
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="英文測驗縮圖" />
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80" alt="英文測驗縮圖" />
           </div>
           <div class="project-content">
-            <h3>20260929 English Test</h3>
-            <p>練習英文題目與答題，適合做簡單的自學測驗頁面。</p>
+            <div class="project-meta">
+              <span class="project-tag">LEARN</span>
+              <span class="project-date">2026/09/29</span>
+            </div>
+            <h3 class="project-title">English Test</h3>
+            <p class="project-description">簡單英語練習頁面，提供題目選答與測驗流程，適合用來提升英文閱讀與應答能力。</p>
+            <span class="project-link">查看作品</span>
           </div>
         </a>
 
         <a class="project-card" href="./20261020stickman/index.html" target="_blank" rel="noopener noreferrer">
           <div class="project-thumb">
-            <img src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=800&q=80" alt="火柴人遊戲縮圖" />
+            <img src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80" alt="火柴人遊戲縮圖" />
           </div>
           <div class="project-content">
-            <h3>20261020 Stickman</h3>
-            <p>控制火柴人躲避障礙物，挑戰速度與反應能力的遊戲體驗。</p>
+            <div class="project-meta">
+              <span class="project-tag">GAME</span>
+              <span class="project-date">2026/10/20</span>
+            </div>
+            <h3 class="project-title">Stickman Dodge</h3>
+            <p class="project-description">操作火柴人躲避前方障礙，測試反應、節奏與空間判斷，是一款簡潔有趣的躲避遊戲。</p>
+            <span class="project-link">查看作品</span>
           </div>
         </a>
       </div>
