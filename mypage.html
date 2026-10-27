@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>杜元銘 個人首頁</title>
+  <style>
+    :root {
+      --bg1: #fffaf0;
+      --bg2: #eaf7ff;
+      --panel: #ffffff;
+      --primary: #ffb703;
+      --primary-dark: #f4a100;
+      --secondary: #5ec8ff;
+      --text: #1f2a37;
+      --muted: #5b6b7a;
+      --line: #e6edf4;
+      --shadow: rgba(91, 140, 255, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+      line-height: 1.7;
+    }
+
+    .container {
+      width: min(1100px, 90vw);
+      margin: 40px auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: center;
+      padding: 32px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: 0 20px 40px var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .badge {
+      display: inline-block;
+      background: #fff3d6;
+      color: #a25b00;
+      border: 1px solid #ffd98a;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 8px 16px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 3vw, 4rem);
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+
+    .info-list {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .info-item {
+      background: #f9fbff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+
+    .label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .profile-box {
+      background: linear-gradient(135deg, #fff9eb 0%, #eefbff 100%);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 4rem;
+      font-weight: 800;
+      box-shadow: 0 22px 34px rgba(94, 200, 255, 0.25);
+      margin-bottom: 16px;
+    }
+
+    .name {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--primary-dark);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 28px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 12px 20px rgba(30, 41, 59, 0.04);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.4rem;
+      color: var(--text);
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px;
+      margin-top: 24px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .project-card {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(230, 237, 244, 0.9);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 18px 30px rgba(31, 42, 55, 0.08);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+      position: relative;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .project-card:nth-child(2) { animation-delay: 0.08s; }
+    .project-card:nth-child(3) { animation-delay: 0.16s; }
+    .project-card:nth-child(4) { animation-delay: 0.24s; }
+
+    .project-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 24px 38px rgba(31, 42, 55, 0.14);
+      border-color: rgba(94, 200, 255, 0.5);
+    }
+
+    .project-card:hover .project-thumb img {
+      transform: scale(1.08);
+    }
+
+    .project-card:hover .project-content h3 {
+      color: var(--primary-dark);
+    }
+
+    .project-thumb {
+      position: relative;
+      height: 190px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ffb703 0%, #5ec8ff 100%);
+    }
+
+    .project-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .project-card:nth-child(2) .project-thumb {
+      background: linear-gradient(135deg, #7ee7b0 0%, #65c7ff 100%);
+    }
+
+    .project-card:nth-child(3) .project-thumb {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    }
+
+    .project-card:nth-child(4) .project-thumb {
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    }
+
+    .project-content {
+      padding: 20px 20px 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,250,255,0.95));
+    }
+
+    .project-content h3 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+      transition: color 0.25s ease;
+    }
+
+    .project-content p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .hero, .section-grid, .project-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <div class="badge">個人首頁</div>
+        <h1>你好，我是杜元銘</h1>
+        <p class="subtitle">成大南工資訊三</p>
+
+        <div class="info-list">
+          <div class="info-item">
+            <span class="label">學校</span>
+            <span class="value">成大南工</span>
+          </div>
+          <div class="info-item">
+            <span class="label">科系</span>
+            <span class="value">資訊三</span>
+          </div>
+          <div class="info-item">
+            <span class="label">興趣</span>
+            <span class="value">程式設計</span>
+          </div>
+          <div class="info-item">
+            <span class="label">目標</span>
+            <span class="value">持續學習</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-box">
+        <div class="avatar">D</div>
+        <p class="name">杜元銘</p>
+        <span class="tag">資訊三學生</span>
+      </div>
+    </section>
+
+    <section class="section-grid">
+      <article class="card">
+        <h2>自我介紹</h2>
+        <p>
+          我是杜元銘，目前就讀成大南工資訊三，熱愛探索新技術與創造有趣的網頁作品。
+          在學習過程中，我努力提升自己的程式能力，並希望能把所學應用在生活與專案中。
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>興趣</h2>
+        <ul>
+          <li>網頁設計</li>
+          <li>程式開發</li>
+          <li>閱讀與學習新知</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>聯絡方式</h2>
+        <ul>
+          <li>Email：example@email.com</li>
+          <li>GitHub：github.com/yourname</li>
+          <li>所在地：台灣</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>作品集</h2>
+      <div class="project-grid">
+        <a class="project-card" href="./20260915打地鼠/index.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb">
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80" alt="打地鼠遊戲縮圖" />
+          </div>
+          <div class="project-content">
+            <h3>20260915 打地鼠</h3>
+            <p>點擊老鼠快速擊倒，測試反應力與節奏感的簡單遊戲。</p>
+          </div>
+        </a>
+
+        <a class="project-card" href="./20260922工程計算機/index.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb">
+            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80" alt="工程計算機縮圖" />
+          </div>
+          <div class="project-content">
+            <h3>20260922 工程計算機</h3>
+            <p>可進行工程相關數值計算，提供實用的計算工具。</p>
+          </div>
+        </a>
+
+        <a class="project-card" href="./20260929englishtest/index.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="英文測驗縮圖" />
+          </div>
+          <div class="project-content">
+            <h3>20260929 English Test</h3>
+            <p>練習英文題目與答題，適合做簡單的自學測驗頁面。</p>
+          </div>
+        </a>
+
+        <a class="project-card" href="./20261020stickman/index.html" target="_blank" rel="noopener noreferrer">
+          <div class="project-thumb">
+            <img src="https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=800&q=80" alt="火柴人遊戲縮圖" />
+          </div>
+          <div class="project-content">
+            <h3>20261020 Stickman</h3>
+            <p>控制火柴人躲避障礙物，挑戰速度與反應能力的遊戲體驗。</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <div class="footer">
+      © 2026 杜元銘｜成大南工 資訊三
+    </div>
+  </div>
+</body>
+</html>
