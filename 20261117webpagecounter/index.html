@@ -28,7 +28,7 @@
     }
 
     body.compact {
-      min-height: 84px;
+      min-height: 21px;
       background: transparent;
     }
 
@@ -42,10 +42,13 @@
     }
 
     body.compact .card {
-      width: 220px;
-      min-height: 84px;
-      padding: 10px 14px;
-      border-radius: 16px;
+      width: 55px;
+      height: 21px;
+      min-height: 21px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 6px;
       box-shadow: none;
     }
 
@@ -56,9 +59,7 @@
     }
 
     body.compact .title {
-      margin: 0;
-      font-size: 0.85rem;
-      line-height: 1.2;
+      display: none;
     }
 
     .count {
@@ -70,9 +71,10 @@
     }
 
     body.compact .count {
-      margin: 2px 0 0;
-      font-size: 1.65rem;
-      line-height: 1.2;
+      margin: 0;
+      font-size: 0.75rem;
+      line-height: 21px;
+      letter-spacing: 0;
     }
 
     .status {
