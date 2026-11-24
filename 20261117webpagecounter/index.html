@@ -27,6 +27,11 @@
       color: var(--text);
     }
 
+    body.compact {
+      min-height: 84px;
+      background: transparent;
+    }
+
     .card {
       width: min(92vw, 420px);
       background: var(--card);
@@ -36,10 +41,24 @@
       text-align: center;
     }
 
+    body.compact .card {
+      width: 220px;
+      min-height: 84px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      box-shadow: none;
+    }
+
     .title {
       margin: 0 0 12px;
       font-size: 2rem;
       font-weight: 700;
+    }
+
+    body.compact .title {
+      margin: 0;
+      font-size: 0.85rem;
+      line-height: 1.2;
     }
 
     .count {
@@ -50,11 +69,22 @@
       letter-spacing: 0.04em;
     }
 
+    body.compact .count {
+      margin: 2px 0 0;
+      font-size: 1.65rem;
+      line-height: 1.2;
+    }
+
     .status {
       color: var(--muted);
       font-size: 0.95rem;
       min-height: 1.4em;
       margin-bottom: 18px;
+    }
+
+    body.compact .status,
+    body.compact button {
+      display: none;
     }
 
     button {
@@ -127,6 +157,9 @@
     refreshBtn.addEventListener('click', () => {
       fetchCount('increment');
     });
+
+    const compactMode = new URLSearchParams(window.location.search).get('compact') === '1';
+    document.body.classList.toggle('compact', compactMode);
 
     fetchCount('increment');
   </script>
